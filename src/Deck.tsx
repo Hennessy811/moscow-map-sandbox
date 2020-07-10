@@ -4,6 +4,7 @@ import { render } from "react-dom";
 import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { GeoJsonLayer, PolygonLayer } from "@deck.gl/layers";
+
 import {
   LightingEffect,
   AmbientLight,
@@ -13,6 +14,7 @@ import { scaleThreshold, scaleLinear } from "d3-scale";
 // import d from "./mos.json";
 import d from "./res.json";
 import d2 from "./res2.json";
+import d5 from "./res5.json";
 
 // Set your mapbox token here
 const MAPBOX_TOKEN =
@@ -42,25 +44,7 @@ const DATA_URL =
 //   return (Value * Math.PI) / 180;
 // }
 export const COLOR_SCALE = scaleLinear()
-  .domain([
-    0,
-    15,
-    45,
-    85,
-    // -0.6,
-    // -0.45,
-    // -0.3,
-    // -0.15,
-    // 0,
-    // 0.15,
-    // 0.3,
-    // 0.45,
-    // 0.6,
-    // 0.75,
-    // 0.9,
-    // 1.05,
-    // 1.2,
-  ])
+  .domain([0, 550])
   .range([
     [255, 255, 255],
     [0, 255, 0],
@@ -85,7 +69,7 @@ export const COLOR_SCALE = scaleLinear()
 const INITIAL_VIEW_STATE = {
   latitude: 55.746747948377,
   longitude: 37.583000442239,
-  zoom: 11,
+  zoom: 10,
   maxZoom: 16,
   pitch: 50,
   bearing: 0,
@@ -127,11 +111,11 @@ function getTooltip({ object }) {
 const Deck = ({
   mapStyle = "mapbox://styles/cskeleto/ckcg3k3ut0qqj1io5dxxw7lux",
 }) => {
-  const [data, setData] = useState(d);
+  const [data, setData] = useState(d5);
 
   const [effects] = useState(() => {
     const lightingEffect = new LightingEffect({ ambientLight, dirLight });
-    lightingEffect.shadowColor = [0, 0, 0, 0.5];
+    lightingEffect.shadowColor = [0, 0, 0, 0.1];
     return [lightingEffect];
   });
 
@@ -140,7 +124,7 @@ const Deck = ({
   }, []);
 
   const layers = [
-    // only needed when using shadows - a plane for shadows to drop on
+    // only needed when using shadows - a plane for shadows to drop on s
     new PolygonLayer({
       id: "ground",
       data: landCover,
@@ -151,15 +135,16 @@ const Deck = ({
     new GeoJsonLayer({
       id: "geojson",
       data,
-      opacity: 0.4,
-      stroked: false,
+      opacity: 0.6,
+      stroked: true,
       filled: true,
       extruded: true,
-      wireframe: true,
+      //   wireframe: true,
       getElevation: (f) => {
-        return f.properties.busy * 100;
+        return f.properties.busy * 25;
       },
       getFillColor: (f) => {
+        if (f.properties.busy === 0) return [0, 0, 0, 0];
         return COLOR_SCALE(f.properties.busy);
       },
       getLineColor: [255, 255, 255],
@@ -190,6 +175,13 @@ const Deck = ({
           }}
         >
           Пятница
+        </button>
+        <button
+          onClick={() => {
+            setData(d5);
+          }}
+        >
+          Пятница-кластеры
         </button>
         <button
           onClick={() => {
