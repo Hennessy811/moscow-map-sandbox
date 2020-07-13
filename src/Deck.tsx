@@ -1,6 +1,5 @@
 // @ts-nocheck
 import React, { useState, useEffect } from "react";
-import { render } from "react-dom";
 import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { GeoJsonLayer, PolygonLayer } from "@deck.gl/layers";
@@ -20,31 +19,9 @@ import d5 from "./res5.json";
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiY3NrZWxldG8iLCJhIjoiY2tjZXcydmIzMGM5YTJ6bnp4cTR4Y3hpdiJ9.OV4dmoz2qVwrGGeCOKOYsw"; // eslint-disable-line
 
-// Source data GeoJSON
-const DATA_URL =
-  "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/geojson/vancouver-blocks.json"; // eslint-disable-line
-
-// function calcCrow(lat1, lon1, lat2, lon2) {
-//   var R = 6371; // km
-//   var dLat = toRad(lat2 - lat1);
-//   var dLon = toRad(lon2 - lon1);
-//   var lat1 = toRad(lat1);
-//   var lat2 = toRad(lat2);
-
-//   var a =
-//     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-//     Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-//   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//   var d = R * c;
-//   return d;
-// }
-
-// // Converts numeric degrees to radians
-// function toRad(Value) {
-//   return (Value * Math.PI) / 180;
-// }
 export const COLOR_SCALE = scaleLinear()
-  .domain([0, 550])
+  // .domain([0, 550])
+  .domain([0, 20, 30, 60])
   .range([
     [255, 255, 255],
     [0, 255, 0],
@@ -69,7 +46,7 @@ export const COLOR_SCALE = scaleLinear()
 const INITIAL_VIEW_STATE = {
   latitude: 55.746747948377,
   longitude: 37.583000442239,
-  zoom: 10,
+  zoom: 11,
   maxZoom: 16,
   pitch: 50,
   bearing: 0,
@@ -111,7 +88,7 @@ function getTooltip({ object }) {
 const Deck = ({
   mapStyle = "mapbox://styles/cskeleto/ckcg3k3ut0qqj1io5dxxw7lux",
 }) => {
-  const [data, setData] = useState(d5);
+  const [data, setData] = useState(d);
 
   const [effects] = useState(() => {
     const lightingEffect = new LightingEffect({ ambientLight, dirLight });
@@ -120,7 +97,7 @@ const Deck = ({
   });
 
   useEffect(() => {
-    console.log(data);
+    // console.log(data.filter((i) => i.properties.busy !== 0));
   }, []);
 
   const layers = [
@@ -135,13 +112,13 @@ const Deck = ({
     new GeoJsonLayer({
       id: "geojson",
       data,
-      opacity: 0.6,
+      opacity: 0.4,
       stroked: true,
       filled: true,
       extruded: true,
       //   wireframe: true,
       getElevation: (f) => {
-        return f.properties.busy * 25;
+        return f.properties.busy * 100;
       },
       getFillColor: (f) => {
         if (f.properties.busy === 0) return [0, 0, 0, 0];
@@ -176,13 +153,13 @@ const Deck = ({
         >
           Пятница
         </button>
-        <button
+        {/* <button
           onClick={() => {
             setData(d5);
           }}
         >
           Пятница-кластеры
-        </button>
+        </button> */}
         <button
           onClick={() => {
             setData(d2);
